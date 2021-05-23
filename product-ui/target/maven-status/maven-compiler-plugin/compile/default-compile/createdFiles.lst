@@ -1,0 +1,11 @@
+com/mycompany/productui/client/dto/Product.class
+com/mycompany/productui/client/dto/ProductDto.class
+com/mycompany/productui/mapper/ProductMapperImpl.class
+com/mycompany/productui/client/dto/SearchDto.class
+com/mycompany/productui/client/dto/MyPage.class
+com/mycompany/productui/ProductUiApplication.class
+com/mycompany/productui/mapper/ProductMapper.class
+com/mycompany/productui/controller/ProductReviewController.class
+com/mycompany/productui/client/ProductApiClient.class
+com/mycompany/productui/controller/ProductController.class
+com/mycompany/productui/client/dto/Review.class

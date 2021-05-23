@@ -1,0 +1,10 @@
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/client/dto/ProductDto.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/client/ProductApiClient.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/controller/ProductReviewController.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/ProductUiApplication.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/controller/ProductController.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/client/dto/MyPage.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/mapper/ProductMapper.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/client/dto/Review.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/client/dto/Product.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-ui/src/main/java/com/mycompany/productui/client/dto/SearchDto.java

@@ -1,0 +1,486 @@
+= springboot-elasticsearch-thymeleaf
+
+The goal of this project is to implement an application called `product-app`. It consists of two https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] services: `product-api` (backend) and `product-ui` (frontend). Data will be stored in https://www.elastic.co/products/elasticsearch[`Elasticsearch`].
+
+== Applications
+
+* **product-api**
++
+`Spring Boot` Web Java application that exposes a REST API to manages products. The information about products are stored in `Elasticsearch`. `product-api` uses https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/[`Spring Data Elasticsearch`] to persist/query/delete data in https://www.elastic.co/products/elasticsearch[`Elasticsearch`]
+
+* **product-ui**
++
+`Spring Boot` Web application that was implemented using https://www.thymeleaf.org/[`Thymeleaf`] as HTML template. `product-ui` is a client of `product-api`. It uses https://cloud.spring.io/spring-cloud-static/spring-cloud-openfeign/current/reference/html/[`Spring Cloud OpenFeign`] to write web service clients easily.
+
+* **eureka-server**
++
+`Spring Boot` application, used as service discovery in this project
+
+== Prerequisites
+
+* https://www.oracle.com/java/technologies/javase-jdk11-downloads.html[`Java 11+`]
+* https://www.docker.com/[`Docker`]
+* https://docs.docker.com/compose/install/[`Docker-Compose`]
+
+== Start Environment
+
+* Open a terminal and navigate to `springboot-elasticsearch-thymeleaf` root folder run
++
+[source]
+----
+docker-compose up -d
+----
+
+* Wait until the `Elasticsearch` docker container is up and healthy. To check it, run
++
+[source]
+----
+docker-compose ps
+----
+
+== Configure an index, alias and insert some products in ES
+
+* In a terminal, make sure you are in `springboot-elasticsearch-thymeleaf` root folder
+
+* Run the following script to create the index `ecommerce.products.v1` with the alias `ecommerce.products` (you can use the default values by just pressing `Enter` on every user input)
++
+[source]
+----
+./create-index.sh
+----
+
+* If you want to insert some products, run
++
+[source]
+----
+./insert-products.sh
+----
+
+* If you want to fix the `reference` property mapping error (explained below), run
++
+[source]
+----
+./reindex.sh
+----
+
+=== Reindex
+
+The script `./reindex.sh` is used to reindex from an index to another index. The default will reindex from `ecommerce.products.v1` to `ecommerce.products.v2`. The only difference between `elasticsearch/mapping-v1.json` (used by `ecommerce.products.v1`) to `elasticsearch/mapping-v2.json` (used by `ecommerce.products.v2`) is the `type` of the `reference` property. In the former is set `text` and in the latter, `keyword`.
+
+It's interesting because the `reference` property has some special characters. An example of `reference` code is `SBES@DDR4-10000`. As it is a `text`, ES (using the `standard` analyzer) splits the content in tokens ['SBES', 'DDR4', 10000]. So, for example, if you are looking for a product with `DDR4` RAM and, for some reason, the string `DDR4` is present in the reference code of some product X, the product X will be selected, even if it doesn't have `DDR4` in its description. It is an error.
+
+So, the script `./reindex.sh` aims to fix it, setting the type `keyword` to `reference` property. The `DDR4` problem won't happen again because, from now on, ES won't tokenize the content present in the `reference` property.
+
+== Running applications using Maven
+
+Below are the steps to start and run the applications using `Maven`. We will need to open a terminal for each one. Make sure you are in `springboot-elasticsearch-thymeleaf` root folder while running the commands.
+
+* **eureka-server**
++
+[source]
+----
+./mvnw clean spring-boot:run --projects eureka-server
+----
+
+* **product-api**
++
+[source]
+----
+./mvnw clean spring-boot:run --projects product-api -Dspring-boot.run.jvmArguments="-Dserver.port=9080"
+----
+
+* **product-ui**
++
+[source]
+----
+./mvnw clean spring-boot:run --projects product-ui -Dspring-boot.run.jvmArguments="-Dserver.port=9081"
+----
+
+== Running applications as Docker containers
+
+* Build Docker Images
+** In a terminal, make sure you are in `springboot-elasticsearch-thymeleaf` root folder
+** Run the following script
+*** JVM
++
+[source]
+----
+./docker-build.sh
+----
+*** Native (it's not working yet)
++
+[source]
+----
+./build-docker.sh native
+----
+
+* Environment Variables
+
+** **product-api**
++
+|===
+|Environment Variable |Description
+
+|`EUREKA_HOST`
+|Specify host of the `Eureka` service discovery to use (default `localhost`)
+
+|`EUREKA_PORT`
+|Specify port of the `Eureka` service discovery to use (default `8761`)
+
+|`ELASTICSEARCH_HOST`
+|Specify host of the `Elasticsearch` search engine to use (default `localhost`)
+
+|`ELASTICSEARCH_NODES_PORT`
+|Specify nodes port of the `Elasticsearch` search engine to use (default `9300`)
+
+|`ELASTICSEARCH_REST_PORT`
+|Specify rest port of the `Elasticsearch` search engine to use (default `9200`)
+|===
+
+** **product-ui**
++
+|===
+|Environment Variable |Description
+
+|`EUREKA_HOST`
+|Specify host of the `Eureka` service discovery to use (default `localhost`)
+
+|`EUREKA_PORT`
+|Specify port of the `Eureka` service discovery to use (default `8761`)
+|===
+
+* Start Docker containers
+** In a terminal, make sure you are in `springboot-elasticsearch-thymeleaf` root folder
+** Run the following script
++
+[source]
+----
+./start-apps.sh
+----
+
+== Application URLs
+
+|===
+|Application |URL
+
+|eureka-server
+|http://localhost:8761
+
+|product-api
+|http://localhost:9080/swagger-ui.html
+
+|product-ui
+|http://localhost:9081
+|===
+
+*Note:* when accessing `product-ui`, if you get the exception shown in the picture below, wait a bit.
+
+image::images/load-balancer-error.png[]
+
+== Demo
+
+* Below is a simple demo that shows a user interacting with `product-ui`
++
+image::images/demo-user-interaction.gif[]
+
+== Shutdown
+
+* Stop applications
+** If they were started with `Maven`, go to `eureka-server`, `product-api` and `product-ui` terminals and press `Ctrl+C`
+** If they were started as Docker containers, make sure you are in `springboot-elasticsearch-thymeleaf` and run the script below
++
+[source]
+----
+./stop-apps.sh
+----
+* Stop and remove docker-compose containers, network and volumes by running the command below. Make sure you are in `springboot-elasticsearch-thymeleaf` root folder
++
+[source]
+----
+docker-compose down -v
+----
+
+== Creating indexes and reindexing them using Elasticsearch REST API
+
+In the following steps, we are going to, manually and using `Elasticsearch` REST API, create an index called `ecommerce.products.v1`, associate an alias called `ecommerce.products` for it and then reindex to another index called `ecommerce.products.v2`.
+
+Make sure you have a clean `Elasticsearch` without the indexes and alias mentioned previously. Also, the following `curl` commands must be executed in `springboot-elasticsearch-thymeleaf` root folder.
+
+* Check ES is up and running
++
+[source]
+----
+curl localhost:9200
+----
++
+It should return something like
++
+[source]
+----
+{
+  "name" : "fadee0b011b7",
+  "cluster_name" : "docker-es-cluster",
+  "cluster_uuid" : "iO1Ne0WXRDeQYZyGp3DaWQ",
+  "version" : {
+    "number" : "7.6.2",
+    "build_flavor" : "oss",
+    "build_type" : "docker",
+    "build_hash" : "ef48eb35cf30adf4db14086e8aabd07ef6fb113f",
+    "build_date" : "2020-03-26T06:34:37.794943Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.4.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+----
+
+* Create `ecommerce.products.v1` index
++
+[source]
+----
+curl -X PUT localhost:9200/ecommerce.products.v1 -H "Content-Type: application/json" -d @elasticsearch/mapping-v1.json
+----
++
+It should return
++
+[source]
+----
+{ "acknowledged":true, "shards_acknowledged":true, "index":"ecommerce.products.v1" }
+----
+
+* Check indexes
++
+[source]
+----
+curl "localhost:9200/_cat/indices?v"
+----
++
+It should return something like
++
+[source]
+----
+health status index                 uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   ecommerce.products.v1 1B3JXm6zQnKolob4mtwRUg   1   1          0            0       230b           230b
+----
+
+* Check `ecommerce.products.v1` index mapping
++
+[source]
+----
+curl "localhost:9200/ecommerce.products.v1/_mapping?pretty"
+----
++
+It should return
++
+[source]
+----
+{
+  "ecommerce.products.v1": {
+    "mappings": {
+      "properties": {
+        "categories": { "type": "keyword" },
+        "created": { "type": "date", "format": "strict_date_time_no_millis||yyyy-MM-dd'T'HH:mmZZ" },
+        "description": { "type": "text" },
+        "name": { "type": "text" },
+        "price": { "type": "float" },
+        "reference": { "type": "text" },
+        "reviews": {
+          "properties": {
+            "comment": { "type": "text" },
+            "created": { "type": "date", "format": "strict_date_time_no_millis||yyyy-MM-dd'T'HH:mmZZ" },
+            "stars": { "type": "short" }
+          }
+        }
+      }
+    }
+  }
+}
+----
+
+* Create alias for `ecommerce.products.v1` index
++
+[source]
+----
+curl -X POST localhost:9200/_aliases -H 'Content-Type: application/json' \
+     -d '{ "actions": [{ "add": {"alias": "ecommerce.products", "index": "ecommerce.products.v1" }}]}'
+----
++
+It should return
++
+[source]
+----
+{ "acknowledged":true }
+----
+
+* Check aliases
++
+[source]
+----
+curl "localhost:9200/_aliases?pretty"
+----
++
+It should return
++
+[source]
+----
+{ "ecommerce.products.v1": { "aliases": { "ecommerce.products": {} } } }
+----
+
+* Create `ecommerce.products.v2` index
++
+[source]
+----
+curl -X PUT localhost:9200/ecommerce.products.v2 -H "Content-Type: application/json" -d @elasticsearch/mapping-v2.json
+----
++
+It should return
++
+[source]
+----
+{ "acknowledged":true, "shards_acknowledged":true, "index":"ecommerce.products.v2" }
+----
++
+Checking indexes again
++
+[source]
+----
+curl "localhost:9200/_cat/indices?v"
+----
++
+It should return something like
++
+[source]
+----
+health status index                 uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   ecommerce.products.v2 Iq0adLgEQSaCTIOISIW4DA   1   1          0            0       230b           230b
+yellow open   ecommerce.products.v1 1B3JXm6zQnKolob4mtwRUg   1   1          0            0       283b           283b
+----
+
+* Reindex from `ecommerce.products.v1` to `ecommerce.products.v2`
++
+[source]
+----
+curl -X POST localhost:9200/_reindex -H 'Content-Type: application/json' \
+     -d '{ "source": { "index": "ecommerce.products.v1" }, "dest": { "index": "ecommerce.products.v2" }}'
+----
++
+It should return something like
++
+[source]
+----
+{
+  "took": 86,
+  "timed_out": false,
+  "total": 0,
+  "updated": 0,
+  "created": 0,
+  "deleted": 0,
+  "batches": 0,
+  "version_conflicts": 0,
+  "noops": 0,
+  "retries": { "bulk": 0, "search": 0 },
+  "throttled_millis": 0,
+  "requests_per_second": -1.0,
+  "throttled_until_millis": 0,
+  "failures": []
+}
+----
+
+* Adjust alias after reindex from `ecommerce.products.v1` to `ecommerce.products.v2`
++
+[source]
+----
+curl -X POST localhost:9200/_aliases -H 'Content-Type: application/json' \
+     -d '{ "actions": [{ "remove": {"alias": "ecommerce.products", "index": "ecommerce.products.v1" }}, { "add": {"alias": "ecommerce.products", "index": "ecommerce.products.v2" }}]}'
+----
++
+It should return
++
+[source]
+----
+{ "acknowledged":true }
+----
++
+Checking aliases again
++
+[source]
+----
+curl "localhost:9200/_aliases?pretty"
+----
++
+It should return something like
++
+[source]
+----
+{
+  "ecommerce.products.v1": { "aliases": {} },
+  "ecommerce.products.v2": { "aliases": { "ecommerce.products": {} } }
+}
+----
+
+* Delete `ecommerce.products.v1` index
++
+[source]
+----
+curl -X DELETE localhost:9200/ecommerce.products.v1
+----
++
+It should return
++
+[source]
+----
+{ "acknowledged":true }
+----
++
+Checking aliases again
++
+[source]
+----
+curl "localhost:9200/_aliases?pretty"
+----
++
+It should return
++
+[source]
+----
+{ "ecommerce.products.v2": { "aliases": { "ecommerce.products": {} } } }
+----
+
+* Simple search
++
+[source]
+----
+curl "localhost:9200/ecommerce.products/_search?pretty"
+----
++
+It should return something like
++
+[source]
+----
+{
+  "took": 1,
+  "timed_out": false,
+  "_shards": { "total": 1, "successful": 1, "skipped": 0, "failed": 0 },
+  "hits": {
+    "total": { "value": 0, "relation": "eq" },
+    "max_score": null,
+    "hits": []
+  }
+}
+----
++
+> As I don't have any products, the `hits` array field is empty
+
+== TODO
+
+* add some Ajax calls, for example, when adding a comment, so the page doesn't need to be refreshed (https://grokonez.com/java-integration/integrate-jquery-ajax-post-get-spring-boot-web-service);
+* add pagination. now, it is just returning all products;
+* add functionality to delete products;
+
+== Reference
+
+* https://www.baeldung.com/spring-cloud-netflix-eureka
+* https://dzone.com/articles/microservice-architecture-with-spring-cloud-and-do
+* https://www.digit.in/laptops-reviews

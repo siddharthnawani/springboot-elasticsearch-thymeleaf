@@ -1,0 +1,17 @@
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/rest/dto/CreateProductDto.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/model/Review.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/util/DateTimeUtil.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/config/SwaggerConfig.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/ProductApiApplication.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/mapper/ProductMapper.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/service/ProductServiceImpl.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/rest/dto/AddReviewDto.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/rest/ProductReviewController.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/repository/ProductRepository.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/model/Product.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/rest/dto/SearchDto.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/exception/ProductNotFoundException.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/rest/dto/UpdateProductDto.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/rest/ProductController.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/config/ErrorAttributesConfig.java
+/Users/siddharthnawani/SiddharthOracle/Personal/personal-worspace/springboot-elasticsearch-thymeleaf/product-api/src/main/java/com/mycompany/productapi/service/ProductService.java
